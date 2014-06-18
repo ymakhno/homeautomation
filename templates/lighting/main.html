@@ -1,0 +1,164 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-theme.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/slider.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "css/lighting.css" %}">
+    <script type="text/javascript" src="{% static "js/bootstrap.min.js" %}"> </script>
+    <script type="text/javascript" src="{% static "js/bootstrap-slider.js" %}"> </script>
+    <script type="text/javascript" src="{% static "js/lighting.js" %}"> </script>
+    <title></title>
+
+    <script>
+        $(document).ready(function() {
+            $("input.slider").slider({
+
+            	formater: function(value) {
+            		return 'Уровень: ' + value;
+            	}
+            });
+        })
+    </script>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Домик Бимиков</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="index">Главная</a></li>
+                <li><a href="cameras">Камеры</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h3>Управление светильниками:</h3>
+    <table id="lights_table" class="table">
+        <thead>
+        <tr>
+            <th style="width: 60%">Светильник</th>
+            <th style="width: 20%">On/Off</th>
+            <th style="width: 20%">Диммер</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for l in lighters %}
+            <tr>
+                <td><input class="lighter_id" type="hidden" value="{{ l.id }}">{{ l.name }}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-default">On</button>
+                      <button type="button" class="btn btn-default">Off</button>
+                    </div>
+                </td>
+                <td>{% if l.is_dimmer %}
+                    <input class="slider" data-slider-id='slider_{{ l.id }}' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1"/>
+                {% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Правила включения:</h3>
+    <table id="rules_table" class="table">
+        <thead>
+        <tr>
+            <th style="width: 10%">Id</th>
+            <th style="width: 30%">Светильник</th>
+            <th style="width: 25%">Дни</th>
+            <th style="width: 15%">Начало</th>
+            <th style="width: 15%">Конец</th>
+            <th style="width: 5%"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for r in rules %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.lighter.name }}</td>
+                <td>
+                    <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default {{ r.monday|yesno:"active," }} }}">Пн</button>
+                        <button type="button" class="btn btn-default {{ r.tuesday|yesno:"active," }}">Вт</button>
+                        <button type="button" class="btn btn-default {{ r.wednesday|yesno:"active," }}">Ср</button>
+                        <button type="button" class="btn btn-default {{ r.thursday|yesno:"active," }}">Чт</button>
+                        <button type="button" class="btn btn-default {{ r.friday|yesno:"active," }}">Пт</button>
+                        <button type="button" class="btn btn-default {{ r.saturday|yesno:"active," }}">Сб</button>
+                        <button type="button" class="btn btn-default {{ r.sunday|yesno:"active," }}">Вс</button>
+                    </div>
+                </td>
+                <td>{{ r.start|time:"H:i" }} + ({{ r.start_delta }} мин)</td>
+                <td>{{ r.end|time:"H:i"}} + ({{ r.end_delta }} мин)</td>
+                <td>
+                    <a href="rules/delete?id={{ r.id }}" class="btn btn-danger btn-xs">X</a>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr id="new_rule">
+            <td></td>
+            <td>
+                <select id="rule_lighter" style="width: 70%">
+                    {% for l in lighters %}
+                        <option value="{{ l.id }}">{{ l.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <div class="btn-group btn-group-xs" data-toggle="buttons">
+                    <label class="btn btn-default"><input id="rule_mon" type="checkbox" autocomplete="off">Пн</label>
+                    <label class="btn btn-default"><input id="rule_tue" type="checkbox" autocomplete="off">Вт</label>
+                    <label class="btn btn-default"><input id="rule_wed" type="checkbox" autocomplete="off">Ср</label>
+                    <label class="btn btn-default"><input id="rule_thu" type="checkbox" autocomplete="off">Чт</label>
+                    <label class="btn btn-default"><input id="rule_fri" type="checkbox" autocomplete="off">Пт</label>
+                    <label class="btn btn-default"><input id="rule_sat" type="checkbox" autocomplete="off">Сб</label>
+                    <label class="btn btn-default"><input id="rule_sun" type="checkbox" autocomplete="off">Вс</label>
+                </div>
+            </td>
+            <td>
+                <input id="rule_start_hour" type="text" maxlength="2" style="width: 25px"> :<input id="rule_start_min" type="text" maxlength="2" style="width: 25px"> +
+                (<input id="rule_start_delta" type="text" maxlength="2" style="width: 25px"> мин)
+            </td>
+            <td>
+                <input id="rule_end_hour" type="text" maxlength="2" style="width: 25px"> :<input id="rule_end_min" type="text" maxlength="2" style="width: 25px"> +
+                (<input id="rule_end_delta" type="text"  maxlength="2" style="width: 25px"> мин)
+            </td>
+            <td>
+                <form id="rule_form" action="rules/add" method="post">
+                    <input type="hidden" name="rule_lighter">
+
+                    <input type="hidden" name="rule_mon"><input type="hidden" name="rule_tue">
+                    <input type="hidden" name="rule_wed"><input type="hidden" name="rule_thu">
+                    <input type="hidden" name="rule_fri"><input type="hidden" name="rule_sat">
+                    <input type="hidden" name="rule_sun">
+
+                    <input type="hidden" name="rule_start_hour">
+                    <input type="hidden" name="rule_start_min">
+                    <input type="hidden" name="rule_start_delta">
+
+                    <input type="hidden" name="rule_end_hour">
+                    <input type="hidden" name="rule_end_min">
+                    <input type="hidden" name="rule_end_delta">
+
+                    <button type="submit" class="btn btn-xs btn-success">+</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
