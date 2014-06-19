@@ -1,3 +1,5 @@
+__pycache__
 /.idea
 /home.iml
 /home.sqlite3
+/django_cron2/migrations/__pycache__

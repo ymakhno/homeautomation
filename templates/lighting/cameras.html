@@ -34,7 +34,7 @@
 
 <div class="container" style="text-align: center">
     {% for c in cameras %}
-        <img src="{{c.url}}?action=stream"><br>{{c.name}}<br>
+        <img src="{{c.url}}?action=stream"><br>{{c.name}} ({{ c.last_motion|date:"Y M d, H:i:s" }})<br>
     {% endfor %}
 </div>
 </body>

@@ -3,7 +3,6 @@ import json
 import random
 from threading import Thread
 from time import sleep
-from urllib.parse import urlencode
 from django_cron2 import CronJobBase, Schedule
 from lighting.models import Rule
 from lighting.pool import get_pool
@@ -41,22 +40,3 @@ class RulesChecker(CronJobBase):
             if rule.check_day(now, True):
                 print("Light off: ", rule)
                 RunRule(rule, True).start()
-
-class SendSMSWithIP(CronJobBase):
-    schedule = Schedule(run_every_secs=432000)
-    code = "send.ip"
-
-    def do(self):
-        print("Sending SMS with current ip")
-        r = get_pool().request('GET', 'http://ip-api.com/json')
-        try:
-            ip = json.loads(r.data.decode('utf-8'))["query"]
-            params = {'version' : 'http', 'login' : '380502921842', 'password' : '112111',
-                      'command' : 'send', 'from' : 'raspberry', 'to' : '380502921842', 'message' : ip}
-            url = "http://smsukraine.com.ua/api/http.php?%s" % urlencode(params)
-            r.close()
-
-            r = get_pool().request('GET', url)
-            r.read()
-        finally:
-            r.close()

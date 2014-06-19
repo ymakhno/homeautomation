@@ -2,6 +2,9 @@ from datetime import timedelta
 from django.db import models
 
 # Create your models here.
+from south.utils.datetime_utils import datetime
+
+
 class DeviceType:
     DIMMER = 0
     SWITCH = 1
@@ -58,3 +61,9 @@ class WebCamera(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
     motion_control = models.BooleanField(default=False)
+    last_motion = models.DateTimeField(default=datetime.now)
+    motion_folder = models.TextField(null = True)
+
+    def __str__(self):
+        return ("WebCamera(name = {self.name}, url = {self.url}, motion_control = {self.motion_control}, "
+                "last_motion = {self.last_motion}, motion_folder = {self.motion_folder})").format(self = self)

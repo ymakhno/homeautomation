@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGGING = {
+    'version': 1,
+}
 
 # Application definition
 
@@ -54,7 +57,7 @@ MIDDLEWARE_CLASSES = [
 CRON_CLASSES = [
     "lighting.zwave.UpdateZWaveStatus",
     "lighting.rules.RulesChecker",
-    "lighting.rules.SendSMSWithIP",
+    "lighting.motion.SendSMSWithMotions",
 ]
 
 ROOT_URLCONF = 'home.urls'
@@ -77,7 +80,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
