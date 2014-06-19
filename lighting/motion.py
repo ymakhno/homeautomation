@@ -23,7 +23,7 @@ class MotionDetection(Thread):
                 camera = WebCamera.objects.get(pk = self._camera.id)
                 if camera.motion_control:
                     now = datetime.now()
-                    request = get_pool().request("GET", "%s?action=snapshot" % camera.url)
+                    request = get_pool().request("GET", "%s?action=snapshot" % camera.internal_url)
                     try:
                         source = Image.open(BytesIO(request.data))
                         img = ImageOps.equalize(ImageOps.grayscale(source))

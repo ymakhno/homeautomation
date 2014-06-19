@@ -60,6 +60,7 @@ class Rule(models.Model):
 class WebCamera(models.Model):
     name = models.CharField(max_length=255)
     url = models.CharField(max_length=255)
+    internal_url = models.CharField(max_length=255, null = True)
     motion_control = models.BooleanField(default=False)
     last_motion = models.DateTimeField(default=datetime.now)
     motion_folder = models.TextField(null = True)
