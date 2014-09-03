@@ -39,6 +39,9 @@ class MotionDetection(Thread):
 
                                 filename = os.path.join(camera.motion_folder, "{:%Y%m%d-%H%M%S}.jpg".format(now))
                                 source.save(filename)
+                                filesize = os.path.getsize(filename)
+                                if filesize < 6700:
+                                    os.remove(filename) 
 
                         self._previous = img
                     finally:
